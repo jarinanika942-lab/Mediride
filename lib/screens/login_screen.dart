@@ -716,7 +716,7 @@ void _forgotPassword() {
                                           MaterialTapTargetSize.shrinkWrap,
                                     ),
                                     child: const Text(
-                                      'Create Patient Account',
+                                      'Create User Account',
                                       style: TextStyle(
                                         color: Color(0xFF2563EB),
                                         fontSize: 13,
