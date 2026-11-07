@@ -132,9 +132,11 @@ class _PickupLocationScreenState extends State<PickupLocationScreen> {
         return;
       }
 
-      final Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
+    final Position position = await Geolocator.getCurrentPosition(
+  locationSettings: const LocationSettings(
+    accuracy: LocationAccuracy.high,
+  ),
+);
 
       if (!mounted) return;
 

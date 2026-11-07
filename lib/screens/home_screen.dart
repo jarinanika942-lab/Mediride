@@ -5,6 +5,7 @@ import 'login_screen.dart';
 import 'booking_screen.dart';
 import 'pickup_location_screen.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_map/flutter_map.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -100,6 +101,102 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!mounted) return;
       _showMessage('Logout failed. Please try again.');
     }
+  }
+
+  // Professional Google Map preview on the Home page.
+  // Shows Sylhet by default and updates to the selected pickup location.
+  // OpenStreetMap preview on the Home page.
+  Widget _buildGoogleMap() {
+    final LatLng mapLocation =
+        _pickupLocation ?? const LatLng(24.8949, 91.8687);
+
+    return Container(
+      height: 220,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: borderColor),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          children: [
+            FlutterMap(
+              key: ValueKey('${mapLocation.latitude},${mapLocation.longitude}'),
+              options: MapOptions(initialCenter: mapLocation, initialZoom: 14),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.example.mediride',
+                ),
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: mapLocation,
+                      width: 50,
+                      height: 50,
+                      child: const Icon(
+                        Icons.location_on_rounded,
+                        color: Colors.red,
+                        size: 40,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            // Pickup Area label
+            Positioned(
+              top: 12,
+              left: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 9,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.10),
+                      blurRadius: 8,
+                    ),
+                  ],
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.location_on_rounded,
+                      color: primaryBlue,
+                      size: 19,
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      'Pickup Area',
+                      style: TextStyle(
+                        color: navy,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showMessage(String message) {
@@ -517,6 +614,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
       children: [
+        _buildGoogleMap(),
+        const SizedBox(height: 18),
         Material(
           color: Colors.white,
           borderRadius: BorderRadius.circular(15),
@@ -576,68 +675,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 20),
-        Container(
-          padding: const EdgeInsets.all(21),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF123B76), Color(0xFF2563EB)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(23),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'MEDIRIDE AMBULANCE SERVICE',
-                      style: TextStyle(
-                        fontSize: 10,
-                        letterSpacing: 1.1,
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Hello${user?.email != null ? '!' : '!'}',
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                    const SizedBox(height: 7),
-                    const Text(
-                      'Emergency care,\njust a tap away.',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 23,
-                        height: 1.3,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Find the right ambulance for your needs.',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Icon(
-                Icons.local_hospital_rounded,
-                color: Colors.white,
-                size: 66,
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 27),
+       
         _sectionTitle(
           'Choose Your Ambulance',
           subtitle:
